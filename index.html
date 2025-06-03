@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบประมวลผลจัดสอนแทน</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .process-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .process-btn:active {
+            transform: translateY(0);
+        }
+
+        .results-section {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .period-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 15px 25px;
+            margin: 20px 0 15px 0;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .teacher-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .teacher-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .teacher-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .period-cell {
+            text-align: center;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .period-header-cell {
+            background: #374151;
+            color: white;
+        }
+
+        .period-occupied {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .period-free {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .absent-periods {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc2626;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+            }
+            
+            .period-cell {
+                padding: 6px 4px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏫 ระบบประมวลผลจัดสอนแทน</h1>
+            <p>ค้นหาครูที่สามารถสอนแทนได้อย่างง่ายดาย</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="daySelect">วัน (จ.-ศ.)</label>
+                    <select id="daySelect">
+                        <option value="">เลือกวัน</option>
+                        <option value="จันทร์">จันทร์</option>
+                        <option value="อังคาร">อังคาร</option>
+                        <option value="พุธ">พุธ</option>
+                        <option value="พฤหัสบดี">พฤหัสบดี</option>
+                        <option value="ศุกร์">ศุกร์</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="teacherSelect">ครูที่ลา/ไปราชการ</label>
+                    <select id="teacherSelect">
+                        <option value="">เลือกครู</option>
+                    </select>
+                </div>
+
+                <button class="process-btn" onclick="processSubstitution()">
+                    🔍 ประมวลผลการจัดสอนแทน
+                </button>
+            </div>
+
+            <div id="resultsSection" class="results-section" style="display: none;">
+                <h2 style="margin-bottom: 20px; color: #374151;">📋 ผลการประมวลผล</h2>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลครูจาก PDF
+        const teachersData = [
+            {
+                name: "นางสาวสุพัฒตา ศรีเมือง",
+                department: "1. กลุ่มสาระการเรียนรู้คณิตศาสตร์",
+                schedule: {
+                    "จันทร์": [1, 3, 4],
+                    "อังคาร": [3],
+                    "พุธ": [1, 2, 3, 4, 5, 6],
+                    "พฤหัสบดี": [1, 2, 3, 4],
+                    "ศุกร์": [1, 2, 4, 5, 6, 7]
+                }
+            },
+            {
+                name: "นางสาวรัตนา สีฟ้า",
+                department: "1. กลุ่มสาระการเรียนรู้คณิตศาสตร์",
+                schedule: {
+                    "จันทร์": [1, 2, 4, 5],
+                    "อังคาร": [2, 3, 4, 5],
+                    "พุธ": [1, 2, 5, 7],
+                    "พฤหัสบดี": [1, 2, 5],
+                    "ศุกร์": [3, 4, 5, 6, 7]
+                }
+            },
+            {
+                name: "นายเดชา วงศ์เจริญ",
+                department: "2. กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี",
+                schedule: {
+                    "จันทร์": [1, 2],
+                    "อังคาร": [2, 3, 4],
+                    "พุธ": [1, 2, 3, 4],
+                    "พฤหัสบดี": [1, 2, 5],
+                    "ศุกร์": [2, 3, 4]
+                }
+            },
+            {
+                name: "นางสาวยุพา ทองคำ",
+                department: "2. กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี",
+                schedule: {
+                    "จันทร์": [1, 2, 3, 4],
+                    "อังคาร": [5],
+                    "พุธ": [1, 3, 4, 5, 6],
+                    "พฤหัสบดี": [1, 2, 3, 4],
+                    "ศุกร์": [2, 3]
+                }
+            },
+            {
+                name: "นางสาวกานต์มณี แก้วพวง",
+                department: "2. กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี",
+                schedule: {
+                    "จันทร์": [5],
+                    "อังคาร": [3, 4, 5, 6],
+                    "พุธ": [3, 4, 5],
+                    "พฤหัสบดี": [3, 4, 5],
+                    "ศุกร์": [1, 3, 4, 5, 6, 7]
+                }
+            },
+            {
+                name: "นางสาวณิชารีย์ คำศรีทา",
+                department: "2. กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี",
+                schedule: {
+                    "จันทร์": [4, 7],
+                    "อังคาร": [3, 4, 5, 6],
+                    "พุธ": [3, 4, 5, 6],
+                    "พฤหัสบดี": [1, 4, 5, 6, 7],
+                    "ศุกร์": []
+                }
+            },
+            {
+                name: "นายนนทพัทธ์ หิรัญเรือง",
+                department: "3. กลุ่มสาระการเรียนรู้ภาษาไทย",
+                schedule: {
+                    "จันทร์": [1, 4, 6, 7],
+                    "อังคาร": [4, 6],
+                    "พุธ": [1, 2, 4, 6],
+                    "พฤหัสบดี": [3, 5, 6],
+                    "ศุกร์": [1, 4, 5, 6, 7]
+                }
+            },
+            {
+                name: "นางสาวจิระประภา ดอกพอง",
+                department: "4. กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ",
+                schedule: {
+                    "จันทร์": [3, 5, 6, 7],
+                    "อังคาร": [3, 4, 5, 6],
+                    "พุธ": [2, 3, 6],
+                    "พฤหัสบดี": [5, 6],
+                    "ศุกร์": [1, 2, 3]
+                }
+            },
+            {
+                name: "นางสาววิไลจิตร จันทร์แจ้ง",
+                department: "4. กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ",
+                schedule: {
+                    "จันทร์": [2, 3, 7],
+                    "อังคาร": [2, 3, 4, 5, 6],
+                    "พุธ": [1, 5, 6],
+                    "พฤหัสบดี": [1, 2, 5, 6],
+                    "ศุกร์": [2]
+                }
+            },
+            {
+                name: "นายวิทยา ใหม่คามิ",
+                department: "5. กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนาและวัฒนธรรม",
+                schedule: {
+                    "จันทร์": [6, 7],
+                    "อังคาร": [2, 3, 5],
+                    "พุธ": [3, 5, 7],
+                    "พฤหัสบดี": [1, 4, 5, 6],
+                    "ศุกร์": [1, 5, 6, 7]
+                }
+            },
+            {
+                name: "นายธนะสิทธิ์ พรหมทอง",
+                department: "5. กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนาและวัฒนธรรม",
+                schedule: {
+                    "จันทร์": [3, 4, 5, 6],
+                    "อังคาร": [4, 6],
+                    "พุธ": [4, 5],
+                    "พฤหัสบดี": [4, 6],
+                    "ศุกร์": [4, 5, 6, 7]
+                }
+            },
+            {
+                name: "นายอาจหาญ วิริยโกศล",
+                department: "6. กลุ่มสาระการเรียนรู้สุขศึกษา พลศึกษา",
+                schedule: {
+                    "จันทร์": [2, 3, 4, 6],
+                    "อังคาร": [2, 3, 4, 5, 6],
+                    "พุธ": [2, 7],
+                    "พฤหัสบดี": [2, 3, 4, 5, 6],
+                    "ศุกร์": []
+                }
+            },
+            {
+                name: "นายไกรสร จันทวี",
+                department: "7. กลุ่มสาระการเรียนรู้ศิลปศึกษา",
+                schedule: {
+                    "จันทร์": [1, 2, 4, 5, 6, 7],
+                    "อังคาร": [2, 3, 4, 6, 7],
+                    "พุธ": [3, 4, 5, 6],
+                    "พฤหัสบดี": [2, 3, 4],
+                    "ศุกร์": []
+                }
+            }
+        ];
+
+        // โหลดรายชื่อครูเมื่อเริ่มต้น
+        function loadTeachers() {
+            const teacherSelect = document.getElementById('teacherSelect');
+            teachersData.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.name;
+                option.textContent = teacher.name;
+                teacherSelect.appendChild(option);
+            });
+        }
+
+        // ฟังก์ชันประมวลผลจัดสอนแทน
+        function processSubstitution() {
+            const day = document.getElementById('daySelect').value;
+            const teacherName = document.getElementById('teacherSelect').value;
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+
+            if (!day || !teacherName) {
+                alert('กรุณาเลือกวันและครูที่ลา/ไปราชการ');
+                return;
+            }
+
+            // แสดง loading
+            resultsContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    กำลังประมวลผล...
+                </div>
+            `;
+            resultsSection.style.display = 'block';
+
+            // จำลองการประมวลผล
+            setTimeout(() => {
+                try {
+                    const result = calculateSubstitution(day, teacherName);
+                    displayResults(result);
+                } catch (error) {
+                    resultsContent.innerHTML = `
+                        <div class="error-message">
+                            <strong>เกิดข้อผิดพลาด:</strong> ${error.message}
+                        </div>
+                    `;
+                }
+            }, 1500);
+        }
+
+        // ฟังก์ชันคำนวณการจัดสอนแทน
+        function calculateSubstitution(day, teacherName) {
+            // หาข้อมูลครูที่ลา
+            const absentTeacher = teachersData.find(t => t.name === teacherName);
+            if (!absentTeacher) {
+                throw new Error('ไม่พบข้อมูลครูที่ระบุ');
+            }
+
+            const absentPeriods = absentTeacher.schedule[day] || [];
+            if (absentPeriods.length === 0) {
+                throw new Error(`ครูท่านนี้ไม่มีคาบสอนในวัน${day}`);
+            }
+
+            // หาครูที่สามารถสอนแทนได้ในแต่ละคาบ
+            const substitutionResults = {};
+
+            absentPeriods.forEach(period => {
+                const availableTeachers = findAvailableTeachers(day, period, absentTeacher, teacherName);
+                substitutionResults[period] = availableTeachers;
+            });
+
+            return {
+                absentTeacher: absentTeacher,
+                day: day,
+                absentPeriods: absentPeriods,
+                substitutionResults: substitutionResults
+            };
+        }
+
+        // ฟังก์ชันหาครูที่สามารถสอนแทนได้
+        function findAvailableTeachers(day, period, absentTeacher, absentTeacherName) {
+            return teachersData
+                .filter(teacher => teacher.name !== absentTeacherName)
+                .map(teacher => {
+                    const teacherPeriods = teacher.schedule[day] || [];
+                    const hasClassInThisPeriod = teacherPeriods.includes(period);
+                    const adjacentPeriods = countAdjacentPeriodsWithLunchBreak(teacherPeriods, period);
+                    const isSameDept = teacher.department === absentTeacher.department;
+
+                    let score = 0;
+                    if (!hasClassInThisPeriod) {
+                        if (isSameDept) score += 100;
+                        if (adjacentPeriods > 1) {
+                            score -= 20 * adjacentPeriods;
+                        } else if (adjacentPeriods === 1) {
+                            score -= 10;
+                        }
+                    }
+
+                    return {
+                        ...teacher,
+                        score: score,
+                        adjacentPeriods: adjacentPeriods,
+                        hasClassInThisPeriod: hasClassInThisPeriod,
+                        isAvailable: !hasClassInThisPeriod,
+                        teacherPeriods: teacherPeriods
+                    };
+                })
+                .filter(teacher => teacher.isAvailable)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 5);
+        }
+
+        // ฟังก์ชันนับคาบติดกัน (คาบ 4-5 ไม่ถือว่าติด)
+        function countAdjacentPeriodsWithLunchBreak(teacherPeriods, targetPeriod) {
+            let count = 0;
+            for (const period of teacherPeriods) {
+                const diff = Math.abs(period - targetPeriod);
+                if (diff === 1) {
+                    const periods = [period, targetPeriod].sort((a, b) => a - b);
+                    if (!(periods[0] === 4 && periods[1] === 5)) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        // ฟังก์ชันแสดงผลลัพธ์
+        function displayResults(result) {
+            const resultsContent = document.getElementById('resultsContent');
+            
+            // แสดงข้อมูลครูที่ลาและคาบที่ต้องจัดสอนแทน
+            let html = `
+                <div class="absent-periods">
+                    <strong>ครูที่ลา/ไปราชการ:</strong> ${result.absentTeacher.name}<br>
+                    <strong>วัน:</strong> ${result.day}<br>
+                    <strong>คาบที่ต้องจัดสอนแทน:</strong> ${result.absentPeriods.join(', ')}<br>
+                    <strong>กลุ่มสาระ:</strong> ${getDepartmentName(result.absentTeacher.department)}
+                </div>
+            `;
+
+            // แสดงผลลัพธ์แยกตามคาบ
+            result.absentPeriods.forEach(period => {
+                const availableTeachers = result.substitutionResults[period];
+                
+                html += `
+                    <div class="period-header">
+                        📚 คาบที่ ${period}
+                    </div>
+                `;
+
+                if (availableTeachers.length === 0) {
+                    html += `
+                        <div class="teacher-card">
+                            <div class="teacher-name" style="color: #dc2626;">
+                                ⚠️ ไม่มีครูที่สามารถสอนแทนได้ในคาบนี้
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    availableTeachers.forEach(teacher => {
+                        let teacherDisplayName = teacher.name;
+                        const deptName = getDepartmentName(teacher.department);
+                        teacherDisplayName += ` (${deptName})`;
+
+                        if (teacher.adjacentPeriods > 1) {
+                            teacherDisplayName += ` * มีคาบติด ${teacher.adjacentPeriods} คาบ`;
+                        } else if (teacher.adjacentPeriods === 1) {
+                            teacherDisplayName += ` * มีคาบติด 1 คาบ`;
+                        }
+
+                        html += `
+                            <div class="teacher-card">
+                                <div class="teacher-name">${teacherDisplayName}</div>
+                                <div class="schedule-grid">
+                                    ${generateScheduleGrid(teacher.teacherPeriods, result.day)}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            resultsContent.innerHTML = html;
+        }
+
+        // ฟังก์ชันสร้างตารางแสดงคาบสอน
+        function generateScheduleGrid(teacherPeriods, day) {
+            let html = '';
+            
+            // หัวตาราง
+            for (let i = 1; i <= 7; i++) {
+                html += `<div class="period-cell period-header-cell">คาบ ${i}</div>`;
+            }
+            
+            // แสดงสถานะแต่ละคาบ
+            for (let i = 1; i <= 7; i++) {
+                const isOccupied = teacherPeriods.includes(i);
+                const cellClass = isOccupied ? 'period-occupied' : 'period-free';
+                const cellText = isOccupied ? '/' : 'ว่าง';
+                html += `<div class="period-cell ${cellClass}">${cellText}</div>`;
+            }
+            
+            return html;
+        }
+
+        // ฟังก์ชันดึงชื่อกลุ่มสาระ
+        function getDepartmentName(department) {
+            if (department.includes('.')) {
+                return department.substring(department.indexOf('.') + 1).trim();
+            }
+            return department;
+        }
+
+        // โหลดข้อมูลเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTeachers();
+        });
+    </script>
+</body>
+</html>
