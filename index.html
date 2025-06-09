@@ -122,6 +122,127 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
+        /* สไตล์สำหรับ Multi-Select */
+        .multi-select-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .multi-select-display {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Kanit', sans-serif;
+            color: #1f2937;
+            cursor: pointer;
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .multi-select-display:hover, .multi-select-display.active {
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .multi-select-placeholder {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .selected-teachers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .teacher-tag {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .teacher-tag .remove-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .teacher-tag .remove-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .multi-select-dropdown.active {
+            display: block;
+        }
+
+        .multi-select-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.2s ease;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .multi-select-option:hover {
+            background: #f8fafc;
+        }
+
+        .multi-select-option.selected {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .multi-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .selection-limit-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
         .process-btn {
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
@@ -143,6 +264,13 @@
             background: linear-gradient(135deg, #047857 0%, #065f46 100%);
         }
 
+        .process-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .results-section {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(15px);
@@ -158,35 +286,49 @@
             font-weight: 600;
         }
 
+        .teacher-result-section {
+            margin-bottom: 40px;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .teacher-result-header {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            padding: 20px 25px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
         .period-header {
             background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
             color: white;
             padding: 18px 25px;
-            margin: 24px 0 18px 0;
-            border-radius: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin: 0;
             font-weight: 600;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .teacher-card {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(0, 0, 0, 0.05);
-            border-radius: 16px;
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             padding: 24px;
-            margin-bottom: 16px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .teacher-card:hover {
             background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(59, 130, 246, 0.2);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .teacher-card:last-child {
+            border-bottom: none;
         }
 
         .teacher-name {
@@ -322,6 +464,11 @@
                 padding: 8px 4px;
                 font-size: 0.8rem;
             }
+
+            .teacher-tag {
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
         }
     </style>
 </head>
@@ -329,7 +476,7 @@
     <div class="container">
         <div class="header">
             <h1>ระบบประมวลผลจัดสอนแทน</h1>
-            <p class="subtitle">ค้นหาครูที่สามารถสอนแทนได้อย่างง่ายดาย</p>
+            <p class="subtitle">ค้นหาครูที่สามารถสอนแทนได้อย่างง่ายดาย (รองรับเลือกได้สูงสุด 6 คน)</p>
             <p class="developer-credit">พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง</p>
         </div>
 
@@ -348,10 +495,20 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="teacherSelect">ครูที่ลา/ไปราชการ</label>
-                    <select id="teacherSelect">
-                        <option value="">เลือกครู</option>
-                    </select>
+                    <label>ครูที่ลา/ไปราชการ (เลือกได้สูงสุด 6 คน)</label>
+                    <div class="multi-select-container">
+                        <div class="multi-select-display" onclick="toggleDropdown()">
+                            <div id="selectedTeachersDisplay" class="multi-select-placeholder">
+                                เลือกครูที่ลา/ไปราชการ
+                            </div>
+                        </div>
+                        <div id="teacherDropdown" class="multi-select-dropdown">
+                            <!-- Options will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div id="selectionWarning" class="selection-limit-warning" style="display: none;">
+                        สามารถเลือกได้สูงสุด 6 คนเท่านั้น
+                    </div>
                 </div>
 
                 <button class="process-btn" onclick="processSubstitution()">
@@ -514,25 +671,109 @@
             }
         ];
 
+        // ตัวแปรเก็บครูที่เลือก
+        let selectedTeachers = [];
+        const MAX_SELECTION = 6;
+
         // โหลดรายชื่อครูเมื่อเริ่มต้น
         function loadTeachers() {
-            const teacherSelect = document.getElementById('teacherSelect');
+            const dropdown = document.getElementById('teacherDropdown');
+            dropdown.innerHTML = '';
+            
             teachersData.forEach(teacher => {
-                const option = document.createElement('option');
-                option.value = teacher.name;
+                const option = document.createElement('div');
+                option.className = 'multi-select-option';
                 option.textContent = teacher.name;
-                teacherSelect.appendChild(option);
+                option.onclick = () => toggleTeacherSelection(teacher.name, option);
+                dropdown.appendChild(option);
             });
         }
+
+        // ฟังก์ชันเปิด/ปิด dropdown
+        function toggleDropdown() {
+            const dropdown = document.getElementById('teacherDropdown');
+            const display = document.querySelector('.multi-select-display');
+            
+            dropdown.classList.toggle('active');
+            display.classList.toggle('active');
+        }
+
+        // ฟังก์ชันเลือก/ยกเลิกการเลือกครู
+        function toggleTeacherSelection(teacherName, optionElement) {
+            const index = selectedTeachers.indexOf(teacherName);
+            const warning = document.getElementById('selectionWarning');
+            
+            if (index === -1) {
+                // เพิ่มครู
+                if (selectedTeachers.length >= MAX_SELECTION) {
+                    warning.style.display = 'block';
+                    setTimeout(() => warning.style.display = 'none', 3000);
+                    return;
+                }
+                selectedTeachers.push(teacherName);
+                optionElement.classList.add('selected');
+            } else {
+                // ลบครู
+                selectedTeachers.splice(index, 1);
+                optionElement.classList.remove('selected');
+            }
+            
+            updateSelectedDisplay();
+        }
+
+        // ฟังก์ชันลบครูจาก tag
+        function removeTeacher(teacherName) {
+            const index = selectedTeachers.indexOf(teacherName);
+            if (index !== -1) {
+                selectedTeachers.splice(index, 1);
+                updateSelectedDisplay();
+                
+                // อัปเดต dropdown
+                const options = document.querySelectorAll('.multi-select-option');
+                options.forEach(option => {
+                    if (option.textContent === teacherName) {
+                        option.classList.remove('selected');
+                    }
+                });
+            }
+        }
+
+        // ฟังก์ชันอัปเดตการแสดงผลครูที่เลือก
+        function updateSelectedDisplay() {
+            const display = document.getElementById('selectedTeachersDisplay');
+            
+            if (selectedTeachers.length === 0) {
+                display.innerHTML = '<div class="multi-select-placeholder">เลือกครูที่ลา/ไปราชการ</div>';
+                display.className = 'multi-select-placeholder';
+            } else {
+                const tagsHtml = selectedTeachers.map(teacher => 
+                    `<div class="teacher-tag">
+                        ${teacher}
+                        <button class="remove-btn" onclick="removeTeacher('${teacher}')" type="button">×</button>
+                    </div>`
+                ).join('');
+                
+                display.innerHTML = `<div class="selected-teachers">${tagsHtml}</div>`;
+                display.className = '';
+            }
+        }
+
+        // ปิด dropdown เมื่อคลิกข้างนอก
+        document.addEventListener('click', function(event) {
+            const container = document.querySelector('.multi-select-container');
+            if (!container.contains(event.target)) {
+                document.getElementById('teacherDropdown').classList.remove('active');
+                document.querySelector('.multi-select-display').classList.remove('active');
+            }
+        });
 
         // ฟังก์ชันประมวลผลจัดสอนแทน
         function processSubstitution() {
             const day = document.getElementById('daySelect').value;
-            const teacherName = document.getElementById('teacherSelect').value;
             const resultsSection = document.getElementById('resultsSection');
             const resultsContent = document.getElementById('resultsContent');
 
-            if (!day || !teacherName) {
+            if (!day || selectedTeachers.length === 0) {
                 alert('กรุณาเลือกวันและครูที่ลา/ไปราชการ');
                 return;
             }
@@ -549,8 +790,8 @@
             // จำลองการประมวลผล
             setTimeout(() => {
                 try {
-                    const result = calculateSubstitution(day, teacherName);
-                    displayResults(result);
+                    const result = calculateMultiSubstitution(day, selectedTeachers);
+                    displayMultiResults(result);
                 } catch (error) {
                     resultsContent.innerHTML = `
                         <div class="error-message">
@@ -561,39 +802,57 @@
             }, 1500);
         }
 
-        // ฟังก์ชันคำนวณการจัดสอนแทน
-        function calculateSubstitution(day, teacherName) {
-            // หาข้อมูลครูที่ลา
-            const absentTeacher = teachersData.find(t => t.name === teacherName);
-            if (!absentTeacher) {
-                throw new Error('ไม่พบข้อมูลครูที่ระบุ');
+        // ฟังก์ชันคำนวณการจัดสอนแทนหลายคน
+        function calculateMultiSubstitution(day, teacherNames) {
+            const results = [];
+
+            for (const teacherName of teacherNames) {
+                const absentTeacher = teachersData.find(t => t.name === teacherName);
+                if (!absentTeacher) {
+                    throw new Error(`ไม่พบข้อมูลครู: ${teacherName}`);
+                }
+
+                const absentPeriods = absentTeacher.schedule[day] || [];
+                if (absentPeriods.length === 0) {
+                    results.push({
+                        teacherName: teacherName,
+                        absentTeacher: absentTeacher,
+                        day: day,
+                        absentPeriods: [],
+                        substitutionResults: {},
+                        noClasses: true
+                    });
+                    continue;
+                }
+
+                // หาครูที่สามารถสอนแทนได้ในแต่ละคาบ (ไม่รวมครูที่ลาคนอื่น)
+                const substitutionResults = {};
+                const otherAbsentTeachers = teacherNames.filter(name => name !== teacherName);
+
+                absentPeriods.forEach(period => {
+                    const availableTeachers = findAvailableTeachersMulti(day, period, absentTeacher, otherAbsentTeachers);
+                    substitutionResults[period] = availableTeachers;
+                });
+
+                results.push({
+                    teacherName: teacherName,
+                    absentTeacher: absentTeacher,
+                    day: day,
+                    absentPeriods: absentPeriods,
+                    substitutionResults: substitutionResults,
+                    noClasses: false
+                });
             }
 
-            const absentPeriods = absentTeacher.schedule[day] || [];
-            if (absentPeriods.length === 0) {
-                throw new Error(`ครูท่านนี้ไม่มีคาบสอนในวัน${day}`);
-            }
-
-            // หาครูที่สามารถสอนแทนได้ในแต่ละคาบ
-            const substitutionResults = {};
-
-            absentPeriods.forEach(period => {
-                const availableTeachers = findAvailableTeachers(day, period, absentTeacher, teacherName);
-                substitutionResults[period] = availableTeachers;
-            });
-
-            return {
-                absentTeacher: absentTeacher,
-                day: day,
-                absentPeriods: absentPeriods,
-                substitutionResults: substitutionResults
-            };
+            return results;
         }
 
-        // ฟังก์ชันหาครูที่สามารถสอนแทนได้
-        function findAvailableTeachers(day, period, absentTeacher, absentTeacherName) {
+        // ฟังก์ชันหาครูที่สามารถสอนแทนได้ (รองรับหลายคน)
+        function findAvailableTeachersMulti(day, period, absentTeacher, otherAbsentTeachers) {
+            const allAbsentTeachers = [absentTeacher.name, ...otherAbsentTeachers];
+            
             return teachersData
-                .filter(teacher => teacher.name !== absentTeacherName)
+                .filter(teacher => !allAbsentTeachers.includes(teacher.name))
                 .map(teacher => {
                     const teacherPeriods = teacher.schedule[day] || [];
                     const hasClassInThisPeriod = teacherPeriods.includes(period);
@@ -639,60 +898,86 @@
             return count;
         }
 
-        // ฟังก์ชันแสดงผลลัพธ์
-        function displayResults(result) {
+        // ฟังก์ชันแสดงผลลัพธ์หลายคน
+        function displayMultiResults(results) {
             const resultsContent = document.getElementById('resultsContent');
             
-            // แสดงข้อมูลครูที่ลาและคาบที่ต้องจัดสอนแทน
             let html = `
                 <div class="absent-periods">
-                    <strong>ครูที่ลา/ไปราชการ:</strong> ${result.absentTeacher.name}<br>
-                    <strong>วัน:</strong> ${result.day}<br>
-                    <strong>คาบที่ต้องจัดสอนแทน:</strong> ${result.absentPeriods.join(', ')}<br>
-                    <strong>กลุ่มสาระ:</strong> ${getDepartmentName(result.absentTeacher.department)}
+                    <strong>สรุปการลา/ไปราชการ:</strong><br>
+                    <strong>วัน:</strong> ${results[0].day}<br>
+                    <strong>จำนวนครูที่ลา:</strong> ${results.length} คน<br>
+                    <strong>รายชื่อ:</strong> ${results.map(r => r.teacherName).join(', ')}
                 </div>
             `;
 
-            // แสดงผลลัพธ์แยกตามคาบ
-            result.absentPeriods.forEach(period => {
-                const availableTeachers = result.substitutionResults[period];
-                
-                html += `
-                    <div class="period-header">
-                        📚 คาบที่ ${period}
-                    </div>
-                `;
-
-                if (availableTeachers.length === 0) {
+            results.forEach((result, index) => {
+                if (result.noClasses) {
                     html += `
-                        <div class="teacher-card">
-                            <div class="teacher-name" style="color: #dc2626;">
-                                ⚠️ ไม่มีครูที่สามารถสอนแทนได้ในคาบนี้
+                        <div class="teacher-result-section">
+                            <div class="teacher-result-header">
+                                👤 ${result.teacherName} - ไม่มีคาบสอนในวันนี้
+                            </div>
+                            <div class="teacher-card">
+                                <div class="teacher-name" style="color: #059669;">
+                                    ✅ ครูท่านนี้ไม่มีคาบสอนในวัน${result.day}
+                                </div>
                             </div>
                         </div>
                     `;
-                } else {
-                    availableTeachers.forEach(teacher => {
-                        let teacherDisplayName = teacher.name;
-                        const deptName = getDepartmentName(teacher.department);
-                        teacherDisplayName += ` (${deptName})`;
+                    return;
+                }
 
-                        if (teacher.adjacentPeriods > 1) {
-                            teacherDisplayName += ` * มีคาบติด ${teacher.adjacentPeriods} คาบ`;
-                        } else if (teacher.adjacentPeriods === 1) {
-                            teacherDisplayName += ` * มีคาบติด 1 คาบ`;
-                        }
+                html += `
+                    <div class="teacher-result-section">
+                        <div class="teacher-result-header">
+                            👤 ${result.teacherName} - ${getDepartmentName(result.absentTeacher.department)}
+                            <br><small>คาบที่ต้องจัดสอนแทน: ${result.absentPeriods.join(', ')}</small>
+                        </div>
+                `;
 
+                result.absentPeriods.forEach(period => {
+                    const availableTeachers = result.substitutionResults[period];
+                    
+                    html += `
+                        <div class="period-header">
+                            📚 คาบที่ ${period}
+                        </div>
+                    `;
+
+                    if (availableTeachers.length === 0) {
                         html += `
                             <div class="teacher-card">
-                                <div class="teacher-name">${teacherDisplayName}</div>
-                                <div class="schedule-grid">
-                                    ${generateScheduleGrid(teacher.teacherPeriods, result.day)}
+                                <div class="teacher-name" style="color: #dc2626;">
+                                    ⚠️ ไม่มีครูที่สามารถสอนแทนได้ในคาบนี้
                                 </div>
                             </div>
                         `;
-                    });
-                }
+                    } else {
+                        availableTeachers.forEach(teacher => {
+                            let teacherDisplayName = teacher.name;
+                            const deptName = getDepartmentName(teacher.department);
+                            teacherDisplayName += ` (${deptName})`;
+
+                            if (teacher.adjacentPeriods > 1) {
+                                teacherDisplayName += ` * มีคาบติด ${teacher.adjacentPeriods} คาบ`;
+                            } else if (teacher.adjacentPeriods === 1) {
+                                teacherDisplayName += ` * มีคาบติด 1 คาบ`;
+                            }
+
+                            html += `
+                                <div class="teacher-card">
+                                    <div class="teacher-name">${teacherDisplayName}</div>
+                                    <div class="schedule-grid">
+                                        ${generateScheduleGrid(teacher.teacherPeriods, result.day)}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                });
+
+                html += `</div>`;
             });
 
             resultsContent.innerHTML = html;
