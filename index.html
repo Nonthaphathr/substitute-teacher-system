@@ -513,7 +513,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>ระบบประมวลผลจัดสอนแทน V.2</h1>
+            <h1>ระบบประมวลผลจัดสอนแทน V.2.1</h1>
             <p class="subtitle">ค้นหาครูที่สามารถสอนแทนได้อย่างง่ายดาย (รองรับเลือกได้สูงสุด 6 คน)</p>
             <p class="developer-credit">พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง</p>
         </div>
@@ -534,15 +534,11 @@
 
                 <div class="input-group">
                     <label>ครูที่ลา/ไปราชการ (เลือกได้สูงสุด 6 คน)</label>
-                    <div class="multi-select-container">
-                        <div class="multi-select-display" onclick="toggleDropdown()">
-                            <div id="selectedTeachersDisplay" class="multi-select-placeholder">
-                                เลือกครูที่ลา/ไปราชการ
-                            </div>
-                        </div>
-                        <div id="teacherDropdown" class="multi-select-dropdown">
-                            <!-- Options will be populated by JavaScript -->
-                        </div>
+                    <div class="selected-teachers-display" id="selectedTeachersDisplay">
+                        <div style="color: rgba(0, 0, 0, 0.5);">ยังไม่ได้เลือกครู</div>
+                    </div>
+                    <div class="teacher-checkboxes" id="teacherCheckboxes">
+                        <!-- Checkboxes will be populated by JavaScript -->
                     </div>
                     <div id="selectionWarning" class="selection-limit-warning" style="display: none;">
                         สามารถเลือกได้สูงสุด 6 คนเท่านั้น
@@ -715,62 +711,52 @@
 
         // โหลดรายชื่อครูเมื่อเริ่มต้น
         function loadTeachers() {
-            const dropdown = document.getElementById('teacherDropdown');
-            dropdown.innerHTML = '';
+            const container = document.getElementById('teacherCheckboxes');
+            container.innerHTML = '';
             
             // เรียงลำดับครูตามชื่อ
             const sortedTeachers = [...teachersData].sort((a, b) => a.name.localeCompare(b.name));
             
             sortedTeachers.forEach(teacher => {
-                const option = document.createElement('div');
-                option.className = 'multi-select-option';
-                option.textContent = teacher.name;
-                option.title = teacher.name; // เพิ่ม tooltip เผื่อชื่อยาว
+                const item = document.createElement('div');
+                item.className = 'teacher-checkbox-item';
                 
-                // รองรับทั้ง click และ touch events
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleTeacherSelection(teacher.name, option);
-                });
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'teacher-checkbox';
+                checkbox.id = `teacher-${teacher.name}`;
+                checkbox.addEventListener('change', () => handleTeacherToggle(teacher.name, checkbox));
                 
-                option.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleTeacherSelection(teacher.name, option);
-                });
+                const label = document.createElement('label');
+                label.className = 'teacher-checkbox-label';
+                label.htmlFor = `teacher-${teacher.name}`;
+                label.textContent = teacher.name;
                 
-                dropdown.appendChild(option);
+                item.appendChild(checkbox);
+                item.appendChild(label);
+                container.appendChild(item);
             });
         }
 
-        // ฟังก์ชันเปิด/ปิด dropdown
-        function toggleDropdown() {
-            const dropdown = document.getElementById('teacherDropdown');
-            const display = document.querySelector('.multi-select-display');
-            
-            dropdown.classList.toggle('active');
-            display.classList.toggle('active');
-        }
-
-        // ฟังก์ชันเลือก/ยกเลิกการเลือกครู
-        function toggleTeacherSelection(teacherName, optionElement) {
-            const index = selectedTeachers.indexOf(teacherName);
+        // ฟังก์ชันจัดการการเลือก/ยกเลิกครู
+        function handleTeacherToggle(teacherName, checkbox) {
             const warning = document.getElementById('selectionWarning');
+            const index = selectedTeachers.indexOf(teacherName);
             
-            if (index === -1) {
+            if (checkbox.checked) {
                 // เพิ่มครู
                 if (selectedTeachers.length >= MAX_SELECTION) {
+                    checkbox.checked = false;
                     warning.style.display = 'block';
                     setTimeout(() => warning.style.display = 'none', 3000);
                     return;
                 }
                 selectedTeachers.push(teacherName);
-                optionElement.classList.add('selected');
             } else {
                 // ลบครู
-                selectedTeachers.splice(index, 1);
-                optionElement.classList.remove('selected');
+                if (index !== -1) {
+                    selectedTeachers.splice(index, 1);
+                }
             }
             
             updateSelectedDisplay();
@@ -783,13 +769,11 @@
                 selectedTeachers.splice(index, 1);
                 updateSelectedDisplay();
                 
-                // อัปเดต dropdown
-                const options = document.querySelectorAll('.multi-select-option');
-                options.forEach(option => {
-                    if (option.textContent === teacherName) {
-                        option.classList.remove('selected');
-                    }
-                });
+                // อัปเดต checkbox
+                const checkbox = document.getElementById(`teacher-${teacherName}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
             }
         }
 
@@ -798,8 +782,7 @@
             const display = document.getElementById('selectedTeachersDisplay');
             
             if (selectedTeachers.length === 0) {
-                display.innerHTML = '<div class="multi-select-placeholder">เลือกครูที่ลา/ไปราชการ</div>';
-                display.className = 'multi-select-placeholder';
+                display.innerHTML = '<div style="color: rgba(0, 0, 0, 0.5);">ยังไม่ได้เลือกครู</div>';
             } else {
                 const tagsHtml = selectedTeachers.map(teacher => 
                     `<div class="teacher-tag">
@@ -809,27 +792,8 @@
                 ).join('');
                 
                 display.innerHTML = `<div class="selected-teachers">${tagsHtml}</div>`;
-                display.className = '';
             }
         }
-
-        // ปิด dropdown เมื่อคลิกข้างนอก
-        document.addEventListener('click', function(event) {
-            const container = document.querySelector('.multi-select-container');
-            if (!container.contains(event.target)) {
-                document.getElementById('teacherDropdown').classList.remove('active');
-                document.querySelector('.multi-select-display').classList.remove('active');
-            }
-        });
-
-        // เพิ่ม event listener สำหรับ mobile touch
-        document.addEventListener('touchstart', function(event) {
-            const container = document.querySelector('.multi-select-container');
-            if (!container.contains(event.target)) {
-                document.getElementById('teacherDropdown').classList.remove('active');
-                document.querySelector('.multi-select-display').classList.remove('active');
-            }
-        });
 
         // ฟังก์ชันประมวลผลจัดสอนแทน
         function processSubstitution() {
