@@ -238,6 +238,39 @@
             border-bottom: none;
         }
 
+        @media (max-width: 768px) {
+            .multi-select-dropdown {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                max-height: 50vh;
+                border-radius: 16px 16px 0 0;
+                border-bottom: none;
+                margin: 0;
+                z-index: 9999;
+            }
+
+            .multi-select-option {
+                padding: 16px 20px;
+                font-size: 1.1rem;
+                border-bottom: 1px solid #f3f4f6;
+                white-space: normal;
+                overflow: visible;
+                text-overflow: initial;
+                line-height: 1.5;
+            }
+
+            .multi-select-option:active {
+                background: #e0e7ff;
+            }
+
+            .multi-select-container {
+                position: static;
+            }
+        }
+
         .selection-limit-warning {
             background: rgba(245, 158, 11, 0.1);
             color: #92400e;
@@ -693,7 +726,20 @@
                 option.className = 'multi-select-option';
                 option.textContent = teacher.name;
                 option.title = teacher.name; // เพิ่ม tooltip เผื่อชื่อยาว
-                option.onclick = () => toggleTeacherSelection(teacher.name, option);
+                
+                // รองรับทั้ง click และ touch events
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleTeacherSelection(teacher.name, option);
+                });
+                
+                option.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleTeacherSelection(teacher.name, option);
+                });
+                
                 dropdown.appendChild(option);
             });
         }
@@ -769,6 +815,15 @@
 
         // ปิด dropdown เมื่อคลิกข้างนอก
         document.addEventListener('click', function(event) {
+            const container = document.querySelector('.multi-select-container');
+            if (!container.contains(event.target)) {
+                document.getElementById('teacherDropdown').classList.remove('active');
+                document.querySelector('.multi-select-display').classList.remove('active');
+            }
+        });
+
+        // เพิ่ม event listener สำหรับ mobile touch
+        document.addEventListener('touchstart', function(event) {
             const container = document.querySelector('.multi-select-container');
             if (!container.contains(event.target)) {
                 document.getElementById('teacherDropdown').classList.remove('active');
